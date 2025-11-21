@@ -141,6 +141,12 @@ class HotkeyGUI:
         self.purchase_after_type_delay = 1.0
         self.fish_count = 0  # Track successful fishing attempts
         
+        # Discord webhook settings
+        self.webhook_url = ""
+        self.webhook_enabled = False
+        self.webhook_interval = 10  # Send webhook every X loops
+        self.webhook_counter = 0  # Track loops for webhook
+        
         # UI/UX improvements
         self.dark_theme = True  # Default to dark theme
         self.tray_icon = None
@@ -250,6 +256,9 @@ class HotkeyGUI:
         self.create_timing_section(current_row)
         current_row += 1
         
+        self.create_webhook_section(current_row)
+        current_row += 1
+        
         self.create_hotkeys_section(current_row)
         current_row += 1
         
@@ -332,7 +341,7 @@ Sequence (per user spec):
 - click point2, wait
 - right-click point4 to close menu
 """
-        print('=== AUTO-PURCHASE SEQUENCE START ===')
+        from datetime import datetime
         pts = self.point_coords
         if not pts or not pts.get(1) or not pts.get(2) or not pts.get(3) or not pts.get(4):
             print('Auto purchase aborted: points not fully set (need points 1-4).')
@@ -406,7 +415,8 @@ Sequence (per user spec):
         self._right_click_at(pts[4])
         threading.Event().wait(self.purchase_click_delay)
         
-        print('=== AUTO-PURCHASE SEQUENCE COMPLETE ===')
+        # Send webhook notification for auto purchase
+        self.send_purchase_webhook(amount)
         print()
 
     def start_rebind(self, action):
@@ -499,33 +509,139 @@ Sequence (per user spec):
     def increment_fish_counter(self):
         """Increment fish counter and update display"""
         self.fish_count += 1
+        self.webhook_counter += 1
         try:
             self.root.after(0, lambda: self.fish_counter_label.config(text=f'🐟 Fish: {self.fish_count}'))
         except Exception:
             pass
         print(f'Fish caught: {self.fish_count}')
+        
+        # Check if we should send webhook
+        if self.webhook_enabled and self.webhook_counter >= self.webhook_interval:
+            self.send_discord_webhook()
+            self.webhook_counter = 0
 
     def reset_fish_counter(self):
         """Reset fish counter when main loop starts"""
         self.fish_count = 0
+        self.webhook_counter = 0
         try:
             self.root.after(0, lambda: self.fish_counter_label.config(text=f'🐟 Fish: {self.fish_count}'))
         except Exception:
             pass
+
+    def send_discord_webhook(self):
+        """Send Discord webhook with fishing progress"""
+        if not self.webhook_url or not self.webhook_enabled:
+            return
+            
+        try:
+            import requests
+            import json
+            from datetime import datetime
+            
+            # Create embed with nice design
+            embed = {
+                "title": "🎣 GPO Autofish Progress",
+                "description": f"Successfully caught **{self.webhook_interval}** fish!",
+                "color": 0x00ff00,  # Green color
+                "fields": [
+                    {
+                        "name": "🐟 Total Fish Caught",
+                        "value": str(self.fish_count),
+                        "inline": True
+                    },
+                    {
+                        "name": "⏱️ Session Progress",
+                        "value": f"{self.webhook_interval} fish in last interval",
+                        "inline": True
+                    }
+                ],
+                "footer": {
+                    "text": "GPO Autofish - Open Source",
+                    "icon_url": "https://cdn.discordapp.com/emojis/🎣.png"
+                },
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            
+            payload = {
+                "embeds": [embed],
+                "username": "GPO Autofish Bot",
+                "avatar_url": "https://cdn.discordapp.com/emojis/🎣.png"
+            }
+            
+            response = requests.post(self.webhook_url, json=payload, timeout=10)
+            if response.status_code == 204:
+                print(f"✅ Webhook sent: {self.webhook_interval} fish caught!")
+            else:
+                print(f"❌ Webhook failed: {response.status_code}")
+                
+        except Exception as e:
+            print(f"❌ Webhook error: {e}")
+
+    def send_purchase_webhook(self, amount):
+        """Send Discord webhook when auto purchase runs"""
+        if not self.webhook_url or not self.webhook_enabled:
+            return
+            
+        try:
+            import requests
+            from datetime import datetime
+            
+            # Create embed for auto purchase
+            embed = {
+                "title": "🛒 GPO Autofish - Auto Purchase",
+                "description": f"Successfully purchased **{amount}** bait!",
+                "color": 0xffa500,  # Orange color
+                "fields": [
+                    {
+                        "name": "🎣 Bait Purchased",
+                        "value": str(amount),
+                        "inline": True
+                    },
+                    {
+                        "name": "🐟 Total Fish Caught",
+                        "value": str(self.fish_count),
+                        "inline": True
+                    },
+                    {
+                        "name": "🔄 Status",
+                        "value": "Auto purchase completed successfully",
+                        "inline": False
+                    }
+                ],
+                "footer": {
+                    "text": "GPO Autofish - Auto Purchase System",
+                },
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            
+            payload = {
+                "embeds": [embed],
+                "username": "GPO Autofish Bot"
+            }
+            
+            response = requests.post(self.webhook_url, json=payload, timeout=10)
+            if response.status_code == 204:
+                print(f"✅ Purchase webhook sent: Bought {amount} bait!")
+            else:
+                print(f"❌ Purchase webhook failed: {response.status_code}")
+                
+        except Exception as e:
+            print(f"❌ Purchase webhook error: {e}")
 
     def check_and_purchase(self):
         """Check if we need to auto-purchase and run sequence if needed"""  # inserted
         if getattr(self, 'auto_purchase_var', None) and self.auto_purchase_var.get():
             self.purchase_counter += 1
             loops_needed = int(getattr(self, 'loops_per_purchase', 1)) if getattr(self, 'loops_per_purchase', None) is not None else 1
-            print(f'Purchase counter: {self.purchase_counter}/{loops_needed}')
+            print(f'🔄 Purchase counter: {self.purchase_counter}/{loops_needed}')
             if self.purchase_counter >= max(1, loops_needed):
-                print('Triggering auto-purchase sequence...')
                 try:
                     self.perform_auto_purchase_sequence()
                     self.purchase_counter = 0
                 except Exception as e:
-                    print(f'Error during auto-purchase: {e}')
+                    print(f'❌ AUTO-PURCHASE ERROR: {e}')
 
     def cast_line(self):
         """Perform the casting action: hold click for 1 second then release"""  # inserted
@@ -546,7 +662,7 @@ Sequence (per user spec):
         
         with mss.mss() as sct:
             if getattr(self, 'auto_purchase_var', None) and self.auto_purchase_var.get():
-                print('Running initial auto-purchase...')
+
                 self.perform_auto_purchase_sequence()
             self.cast_line()
             cast_time = time.time()
@@ -1047,6 +1163,10 @@ Sequence (per user spec):
     def create_hotkeys_section(self, start_row):
         """Create the hotkey bindings collapsible section"""
         section = CollapsibleFrame(self.main_frame, "⌨️ Hotkey Bindings", start_row)
+        # Start collapsed by default
+        section.is_expanded = False
+        section.content_frame.pack_forget()
+        section.toggle_btn.config(text='+')
         self.collapsible_sections['hotkeys'] = section
         frame = section.get_content_frame()
         
@@ -1079,6 +1199,93 @@ Sequence (per user spec):
         help_btn = ttk.Button(frame, text='?', width=3)
         help_btn.grid(row=row, column=3, padx=5, pady=5)
         ToolTip(help_btn, "Close the application completely")
+
+    def create_webhook_section(self, start_row):
+        """Create the Discord webhook collapsible section"""
+        section = CollapsibleFrame(self.main_frame, "🔗 Discord Webhook", start_row)
+        self.collapsible_sections['webhook'] = section
+        frame = section.get_content_frame()
+        
+        row = 0
+        # Enable webhook checkbox
+        self.webhook_enabled_var = tk.BooleanVar(value=self.webhook_enabled)
+        webhook_check = ttk.Checkbutton(frame, text='Enable Discord Webhook', variable=self.webhook_enabled_var)
+        webhook_check.grid(row=row, column=0, columnspan=2, sticky=tk.W, pady=5)
+        help_btn = ttk.Button(frame, text='?', width=3)
+        help_btn.grid(row=row, column=3, padx=5, pady=5)
+        ToolTip(help_btn, "Send fishing progress updates to Discord")
+        self.webhook_enabled_var.trace_add('write', lambda *args: setattr(self, 'webhook_enabled', self.webhook_enabled_var.get()))
+        row += 1
+        
+        # Webhook URL
+        ttk.Label(frame, text='Webhook URL:').grid(row=row, column=0, sticky=tk.W, pady=5)
+        self.webhook_url_var = tk.StringVar(value=self.webhook_url)
+        webhook_entry = ttk.Entry(frame, textvariable=self.webhook_url_var, width=30)
+        webhook_entry.grid(row=row, column=1, columnspan=2, sticky='ew', pady=5, padx=5)
+        help_btn = ttk.Button(frame, text='?', width=3)
+        help_btn.grid(row=row, column=3, padx=5, pady=5)
+        ToolTip(help_btn, "Discord webhook URL from your server settings")
+        self.webhook_url_var.trace_add('write', lambda *args: setattr(self, 'webhook_url', self.webhook_url_var.get()))
+        row += 1
+        
+        # Webhook interval
+        ttk.Label(frame, text='Send Every X Fish:').grid(row=row, column=0, sticky=tk.W, pady=5)
+        self.webhook_interval_var = tk.IntVar(value=self.webhook_interval)
+        interval_spinbox = ttk.Spinbox(frame, from_=1, to=100, textvariable=self.webhook_interval_var, width=10)
+        interval_spinbox.grid(row=row, column=1, pady=5)
+        help_btn = ttk.Button(frame, text='?', width=3)
+        help_btn.grid(row=row, column=3, padx=5, pady=5)
+        ToolTip(help_btn, "Send webhook message every X fish caught (e.g., 10 = message every 10 fish)")
+        self.webhook_interval_var.trace_add('write', lambda *args: setattr(self, 'webhook_interval', self.webhook_interval_var.get()))
+        row += 1
+        
+        # Test webhook button
+        test_btn = ttk.Button(frame, text='Test Webhook', command=self.test_webhook)
+        test_btn.grid(row=row, column=0, columnspan=2, pady=10)
+        help_btn = ttk.Button(frame, text='?', width=3)
+        help_btn.grid(row=row, column=3, padx=5, pady=5)
+        ToolTip(help_btn, "Send a test message to verify webhook is working")
+
+    def test_webhook(self):
+        """Send a test webhook message"""
+        if not self.webhook_url:
+            print("❌ Please enter a webhook URL first")
+            return
+            
+        try:
+            import requests
+            from datetime import datetime
+            
+            embed = {
+                "title": "🧪 GPO Autofish Test",
+                "description": "Webhook test successful! ✅",
+                "color": 0x0099ff,  # Blue color
+                "fields": [
+                    {
+                        "name": "🔧 Status",
+                        "value": "Webhook is working correctly",
+                        "inline": True
+                    }
+                ],
+                "footer": {
+                    "text": "GPO Autofish - Open Source",
+                },
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            
+            payload = {
+                "embeds": [embed],
+                "username": "GPO Autofish Bot"
+            }
+            
+            response = requests.post(self.webhook_url, json=payload, timeout=10)
+            if response.status_code == 204:
+                print("✅ Test webhook sent successfully!")
+            else:
+                print(f"❌ Test webhook failed: {response.status_code}")
+                
+        except Exception as e:
+            print(f"❌ Test webhook error: {e}")
 
     def apply_theme(self):
         """Apply the current theme to the application"""
