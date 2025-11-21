@@ -154,16 +154,18 @@ class HotkeyGUI:
     def capture_mouse_click(self, idx):
         """Start a listener to capture the next mouse click and store its coordinates."""  # inserted
         try:
-            self.status_msg.config(text=f'Click anywhere to set Point {idx}...', foreground='blue') if hasattr(self, 'status_msg') else self.status_msg.config(text=f'Click anywhere to set Point {idx}...', foreground='blue')
+            self.status_msg.config(text=f'Click anywhere to set Point {idx}...', foreground='blue')
 
             def _on_click(x, y, button, pressed):
                 if pressed:
-                    y.point_coords[x] = (x, y)
+                    self.point_coords[idx] = (x, y)
                     try:
-                        y.root.after(0, lambda: self.update_point_button(idx))
-                        y.root.after(0, lambda: self.status_msg.config(text=f'Point {idx} set: ({x}, {y})', foreground='green'))
+                        self.root.after(0, lambda: self.update_point_button(idx))
+                        self.root.after(0, lambda: self.status_msg.config(text=f'Point {idx} set: ({x}, {y})', foreground='green'))
                     except Exception:
-                        return False
+                        pass
+                    return False  # Stop listener after first click
+            
             listener = pynput_mouse.Listener(on_click=_on_click)
             listener.start()
         except Exception as e:
