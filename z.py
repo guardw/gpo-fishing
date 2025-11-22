@@ -390,8 +390,8 @@ class HotkeyGUI:
             return
         
         # Right-click point 5 to fish at
-        print(f'Right-clicking Point 4: {pts[5]}')
-        self._right_click_at(pts[5])
+        print(f'Right-clicking Point 4: {pts[4]}')
+        self._right_click_at(pts[4])
         threading.Event().wait(self.purchase_click_delay)
         
         print('=== AUTO-PURCHASE SEQUENCE COMPLETE ===')
@@ -410,8 +410,8 @@ class HotkeyGUI:
             return
         
         # Click point 4 | cancel order
-        print(f'Clicking Point 2: {pts[4]}')
-        self._click_at(pts[4])
+        print(f'Clicking Point 3: {pts[3]}')
+        self._click_at(pts[3])
         threading.Event().wait(self.purchase_click_delay)
         
         if not self.main_loop_active:
@@ -426,8 +426,8 @@ class HotkeyGUI:
             return
         
         # Right-click point 5 to fish at | repo mouse
-        print(f'Right-clicking Point 4: {pts[5]}')
-        self._right_click_at(pts[5])
+        print(f'Right-clicking Point 4: {pts[4]}')
+        self._right_click_at(pts[4])
         threading.Event().wait(self.purchase_click_delay)
         
         print('=== AUTO-PURCHASE SEQUENCE COMPLETE ===')
@@ -994,7 +994,7 @@ class HotkeyGUI:
         self.point_buttons = {}
         self.point_coords = {1: None, 2: None, 3: None, 4: None}
         
-        for i in range(1, 6):
+        for i in range(1, 5):
             ttk.Label(frame, text=f'Point {i}:').grid(row=row, column=0, sticky=tk.W, pady=5)
             self.point_buttons[i] = ttk.Button(frame, text=f'Point {i}', command=lambda idx=i: self.capture_mouse_click(idx))
             self.point_buttons[i].grid(row=row, column=1, pady=5, sticky=tk.W)
@@ -1002,11 +1002,10 @@ class HotkeyGUI:
             help_btn.grid(row=row, column=3, padx=5, pady=5)
             
             tooltips = {
-                1: "Click to set: Shop NPC or buy button location",
+                1: "Click to set: Buy button location",
                 2: "Click to set: Amount input field location", 
-                3: "Click to set: Confirm/purchase button location",
-                4: "Click to set: Decline shop purchase",
-                5: "Click to set: Put mouse on position to fish"
+                3: "Click to set: Decline purchase location",
+                4: "Click to set: Mouse Cursor position to fish at"
             }
             ToolTip(help_btn, tooltips[i])
             row += 1
@@ -1345,7 +1344,15 @@ class HotkeyGUI:
             self.auto_purchase_var.set(preset_data.get('auto_purchase_enabled', True))
             self.amount_var.set(preset_data.get('auto_purchase_amount', 10))
             self.loops_var.set(preset_data.get('loops_per_purchase', 10))
-            self.point_coords = preset_data.get('point_coords', {1: None, 2: None, 3: None, 4: None})
+            raw_points = preset_data.get('point_coords', { "1": None, "2": None, "3": None, "4": None })
+            self.point_coords = {}
+            for k, v in raw_points.items():
+                try:
+                    ik = int(k)
+                except Exception:
+                    continue
+                self.point_coords[ik] = tuple(v) if v is not None else None
+                
             self.kp_var.set(preset_data.get('kp', 0.1))
             self.kd_var.set(preset_data.get('kd', 0.5))
             self.timeout_var.set(preset_data.get('scan_timeout', 15.0))
