@@ -389,7 +389,7 @@ class HotkeyGUI:
         if not self.main_loop_active:
             return
         
-        # Right-click point 5 to fish at
+        # Right-click point 4 to fish at
         print(f'Right-clicking Point 4: {pts[4]}')
         self._right_click_at(pts[4])
         threading.Event().wait(self.purchase_click_delay)
@@ -400,8 +400,8 @@ class HotkeyGUI:
     def perform_purchase_cancel(self):
         print('=== PURCHASE CANCELLATION SEQUENCE START ===')
         pts = self.point_coords
-        if not pts or not pts.get(4) or not pts.get(2):
-            print('Auto purchase aborted: points not fully set (need points 4&2).')
+        if not pts or not pts.get(3) or not pts.get(2):
+            print('Auto purchase aborted: points not fully set (need points 3&2).')
             return
         
         # Check if main loop is still active before starting
@@ -412,7 +412,7 @@ class HotkeyGUI:
         # Click point 4 | cancel order
         print(f'Clicking Point 3: {pts[3]}')
         self._click_at(pts[3])
-        threading.Event().wait(self.purchase_click_delay)
+        threading.Event().wait(self.purchase_click_delay/2)
         
         if not self.main_loop_active:
             return
@@ -420,17 +420,17 @@ class HotkeyGUI:
         # Click point 2 | cancel menu
         print(f'Clicking Point 2: {pts[2]}')
         self._click_at(pts[2])
-        threading.Event().wait(self.purchase_click_delay)
+        threading.Event().wait(self.purchase_click_delay/2)
         
         if not self.main_loop_active:
             return
         
-        # Right-click point 5 to fish at | repo mouse
+        # Right-click point 4 to fish at
         print(f'Right-clicking Point 4: {pts[4]}')
         self._right_click_at(pts[4])
         threading.Event().wait(self.purchase_click_delay)
         
-        print('=== AUTO-PURCHASE SEQUENCE COMPLETE ===')
+        print('=== PURCHASE CANCEL SEQUENCE COMPLETE ===')
         print()
     
 

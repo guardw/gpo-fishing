@@ -1,5 +1,5 @@
 {
-  "auto_purchase_enabled": true,
+  "auto_purchase_enabled": false,
   "auto_purchase_amount": 10,
   "loops_per_purchase": 10,
   "point_coords": {
@@ -12,12 +12,12 @@
       945
     ],
     "3": [
-      814,
-      930
+      1118,
+      937
     ],
     "4": [
-      1106,
-      940
+      958,
+      235
     ],
     "5": [
       943,
@@ -40,5 +40,5 @@
     "height": 495
   },
   "dark_theme": true,
-  "created": "2025-11-22T15:06:02.666666"
+  "created": "2025-11-22T17:49:07.984254"
 }
