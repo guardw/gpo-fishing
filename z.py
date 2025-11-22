@@ -320,18 +320,6 @@ class HotkeyGUI:
             print(f'Error right-clicking at {coords}: {e}')
 
     def perform_auto_purchase_sequence(self):
-        """Perform the auto-purchase sequence using saved points and amount.
-
-Sequence (per user spec):
-- press 'e', wait
-- click point1, wait
-- click point2, wait
-- type amount, wait
-- click point1, wait
-- click point3, wait
-- click point2, wait
-- right-click point4 to close menu
-"""
         print('=== AUTO-PURCHASE SEQUENCE START ===')
         pts = self.point_coords
         if not pts or not pts.get(1) or not pts.get(2) or not pts.get(3) or not pts.get(4):
@@ -392,7 +380,7 @@ Sequence (per user spec):
         
         if not self.main_loop_active:
             return
-        
+
         # Click point 2
         print(f'Clicking Point 2: {pts[2]}')
         self._click_at(pts[2])
@@ -401,13 +389,50 @@ Sequence (per user spec):
         if not self.main_loop_active:
             return
         
-        # Right-click point 4 to close menu
-        print(f'Right-clicking Point 4: {pts[4]}')
-        self._right_click_at(pts[4])
+        # Right-click point 5 to fish at
+        print(f'Right-clicking Point 4: {pts[5]}')
+        self._right_click_at(pts[5])
         threading.Event().wait(self.purchase_click_delay)
         
         print('=== AUTO-PURCHASE SEQUENCE COMPLETE ===')
         print()
+
+    def perform_purchase_cancel(self):
+        print('=== PURCHASE CANCELLATION SEQUENCE START ===')
+        pts = self.point_coords
+        if not pts or not pts.get(4) or not pts.get(2):
+            print('Auto purchase aborted: points not fully set (need points 4&2).')
+            return
+        
+        # Check if main loop is still active before starting
+        if not self.main_loop_active:
+            print('Auto purchase aborted: main loop stopped.')
+            return
+        
+        # Click point 4 | cancel order
+        print(f'Clicking Point 2: {pts[4]}')
+        self._click_at(pts[4])
+        threading.Event().wait(self.purchase_click_delay)
+        
+        if not self.main_loop_active:
+            return
+
+        # Click point 2 | cancel menu
+        print(f'Clicking Point 2: {pts[2]}')
+        self._click_at(pts[2])
+        threading.Event().wait(self.purchase_click_delay)
+        
+        if not self.main_loop_active:
+            return
+        
+        # Right-click point 5 to fish at | repo mouse
+        print(f'Right-clicking Point 4: {pts[5]}')
+        self._right_click_at(pts[5])
+        threading.Event().wait(self.purchase_click_delay)
+        
+        print('=== AUTO-PURCHASE SEQUENCE COMPLETE ===')
+        print()
+    
 
     def start_rebind(self, action):
         """Start recording a new hotkey"""  # inserted
@@ -585,6 +610,7 @@ Sequence (per user spec):
                     # No blue bar found - check if we should timeout
                     if not detected and current_time - cast_time > self.scan_timeout:
                         print(f'Cast timeout after {self.scan_timeout}s, recasting...')
+                        self.perform_purchase_cancel()
                         self.cast_line()
                         cast_time = time.time()
                         detected = False
@@ -968,7 +994,7 @@ Sequence (per user spec):
         self.point_buttons = {}
         self.point_coords = {1: None, 2: None, 3: None, 4: None}
         
-        for i in range(1, 5):
+        for i in range(1, 6):
             ttk.Label(frame, text=f'Point {i}:').grid(row=row, column=0, sticky=tk.W, pady=5)
             self.point_buttons[i] = ttk.Button(frame, text=f'Point {i}', command=lambda idx=i: self.capture_mouse_click(idx))
             self.point_buttons[i].grid(row=row, column=1, pady=5, sticky=tk.W)
@@ -979,7 +1005,8 @@ Sequence (per user spec):
                 1: "Click to set: Shop NPC or buy button location",
                 2: "Click to set: Amount input field location", 
                 3: "Click to set: Confirm/purchase button location",
-                4: "Click to set: Close menu/exit shop location"
+                4: "Click to set: Decline shop purchase",
+                5: "Click to set: Put mouse on position to fish"
             }
             ToolTip(help_btn, tooltips[i])
             row += 1
