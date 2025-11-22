@@ -1,32 +1,5 @@
-[![Discord](https://img.shields.io/badge/Discord-Join%20Server-7289da?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/unPZxXAtfb)
-
-# 🎣 GPO Autofish - GUIDE
-
-**💬 Join our Discord server:** https://discord.gg/unPZxXAtfb
-
-## What is this?
-
-This is the **open-source version** of the GPO fishing macro that everyone uses. Unlike the closed-source version that gets flagged as a virus and isn't trustworthy, this version is:
-
-- ✅ **Fully open source** - You can see and verify all the code
-- ✅ **No viruses** - Clean, transparent, and safe
-- ✅ **Improved** - Better features and reliability
-- ✅ **Community-driven** - Open for contributions and review
-
-The original closed-source macro is sketchy and often flagged by antivirus software because you can't verify what it's actually doing. This open-source version solves that problem.
-
-**🛡️ Concerned about safety? Read [IS_IT_A_VIRUS.md](IS_IT_A_VIRUS.md) for more information.**
-
----
-
-**Features:**
-
-- Automatic fish detection and tracking
-- PD controller for smooth, accurate bar control
-- Configurable auto-purchase system for bait
-- Draggable detection overlay
-- Global hotkey support (F1/F2/F3)
-- Tunable parameters for optimal performance
+# forked auto fish
+removed clutter, removed network communic, jus for personal use and tweaks that suits for me
 
 ## Installation
 
