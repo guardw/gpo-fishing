@@ -5,4 +5,3 @@ mss
 numpy
 pillow
 pystray
-requests
