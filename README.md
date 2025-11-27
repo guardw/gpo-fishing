@@ -10,7 +10,7 @@ removed clutter, removed network communic, jus for personal use and tweaks that 
 2. **Clone or download this repository**
 
    ```bash
-   git clone https://github.com/yourusername/gpo-autofish.git
+   git clone https://github.com/guardw/gpo-fishin
    cd gpo-autofish
    ```
 
