@@ -5,19 +5,6 @@ echo GPO Autofish - Running as Administrator
 echo ============================================
 echo.
 
-REM Check if running as admin
-net session >nul 2>&1
-if %errorLevel% == 0 (
-    echo [OK] Running with Administrator privileges
-    echo.
-) else (
-    echo [ERROR] Not running as Administrator!
-    echo Please right-click this file and select "Run as administrator"
-    echo.
-    pause
-    exit /b 1
-)
-
 REM Check if Python is installed
 python --version >nul 2>&1
 if %errorLevel% == 0 (
