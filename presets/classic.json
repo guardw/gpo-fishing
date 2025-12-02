@@ -1,7 +1,7 @@
 {
   "auto_purchase_enabled": false,
-  "auto_purchase_amount": 10,
-  "loops_per_purchase": 10,
+  "auto_purchase_amount": 55,
+  "loops_per_purchase": 50,
   "point_coords": {
     "1": [
       785,
@@ -24,8 +24,8 @@
       323
     ]
   },
-  "kp": 0.1,
-  "kd": 0.5,
+  "kp": 0.15,
+  "kd": 0.7,
   "scan_timeout": 15.0,
   "wait_after_loss": 1.0,
   "hotkeys": {
@@ -40,5 +40,5 @@
     "height": 495
   },
   "dark_theme": true,
-  "created": "2025-11-22T17:49:07.984254"
+  "created": "2025-11-23T12:33:22.212970"
 }
