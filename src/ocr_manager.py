@@ -29,7 +29,7 @@ try:
     OCR_AVAILABLE = True
     OCR_ENGINE = "easy"
     print("✅ EasyOCR loaded successfully - text recognition available!")
-except ImportError as e:
+except Exception as e:
     print(f"🔍 EasyOCR import failed: {e}")
     try:
         # Fallback to PaddleOCR
@@ -38,7 +38,7 @@ except ImportError as e:
         OCR_AVAILABLE = True
         OCR_ENGINE = "paddle"
         print("✅ PaddleOCR loaded successfully - lightweight text recognition!")
-    except ImportError as e2:
+    except Exception as e2:
         print(f"🔍 PaddleOCR import failed: {e2}")
         OCR_AVAILABLE = False
         OCR_ENGINE = None

@@ -8,10 +8,15 @@ REM Install all requirements first
 echo [1/5] Installing requirements...
 python -m pip install -r requirements.txt
 
-REM Fix numpy installation issues
-echo [2/5] Fixing numpy installation...
-python -m pip uninstall numpy -y
-python -m pip install numpy==2.3.5
+REM Keep NumPy compatible with the Torch version installed by EasyOCR.
+echo [2/5] Verifying NumPy and OCR dependencies...
+python -c "import numpy, easyocr, torch; print('NumPy/EasyOCR/Torch ready')"
+if errorlevel 1 (
+    echo Required OCR dependencies are missing or could not load.
+    echo Run install.bat first, then retry this build.
+    pause
+    exit /b 1
+)
 
 REM Install PyInstaller if not present
 echo [3/5] Checking PyInstaller...
@@ -43,7 +48,7 @@ echo This may take several minutes...
 echo.
 
 python -m PyInstaller ^
-    --onefile ^
+    --onedir ^
     --windowed ^
     --name "GPO_Fishing_Macro" ^
     %ICON_PARAM% ^
@@ -66,6 +71,11 @@ python -m PyInstaller ^
     --hidden-import=importlib_metadata ^
     --hidden-import=platformdirs ^
     --hidden-import=zipp ^
+    --hidden-import=torch ^
+    --hidden-import=torch._C ^
+    --hidden-import=torchvision ^
+    --hidden-import=easyocr ^
+    --hidden-import=cv2 ^
     --hidden-import=jaraco ^
     --hidden-import=jaraco.text ^
     --hidden-import=jaraco.context ^
@@ -80,6 +90,10 @@ python -m PyInstaller ^
     --collect-all=jaraco ^
     --collect-all=platformdirs ^
     --collect-all=numpy ^
+    --collect-all=torch ^
+    --collect-all=torchvision ^
+    --collect-all=easyocr ^
+    --collect-all=cv2 ^
     --distpath=dist ^
     --workpath=build ^
     --specpath=. ^
@@ -105,7 +119,7 @@ if exist GPO_Fishing_Macro.spec del GPO_Fishing_Macro.spec >nul 2>&1
 echo.
 echo ========================================
 echo  BUILD SUCCESS!
-echo  Output: dist\GPO_Fishing_Macro.exe
+echo  Output: dist\GPO_Fishing_Macro\GPO_Fishing_Macro.exe
 echo ========================================
 echo.
 pause

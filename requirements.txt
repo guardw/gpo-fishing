@@ -5,3 +5,8 @@ mss
 numpy
 pillow
 pystray
+customtkinter
+requests
+opencv-python
+easyocr
+pyinstaller

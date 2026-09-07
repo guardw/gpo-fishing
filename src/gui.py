@@ -2994,9 +2994,6 @@ Sequence (per user spec):
                 self.zoom_in_var.set(zoom_settings.get('zoom_in_steps', 3))
             
             # Update managers with loaded settings
-            if hasattr(self, 'ocr_manager') and ocr_settings.get('tesseract_path'):
-                self.ocr_manager = OCRManager(ocr_settings['tesseract_path'])
-            
             if hasattr(self, 'zoom_controller'):
                 self.zoom_controller.update_settings({
                     'zoom_out_steps': zoom_settings.get('zoom_out_steps', 5),
