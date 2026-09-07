@@ -1,0 +1,31 @@
+{
+  "auto_purchase_enabled": true,
+  "auto_purchase_amount": 9,
+  "loops_per_purchase": 11,
+  "point_coords": {
+    "1": [
+      809,
+      931
+    ],
+    "2": [
+      966,
+      936
+    ],
+    "3": [
+      1146,
+      933
+    ]
+  },
+  "kp": 0.1,
+  "kd": 0.5,
+  "scan_timeout": 14.0,
+  "wait_after_loss": 1.0,
+  "purchase_delay_after_key": 2.0,
+  "purchase_click_delay": 1.0,
+  "purchase_after_type_delay": 1.0,
+  "auto_bait_enabled": true,
+  "recovery_enabled": true,
+  "silent_mode": false,
+  "verbose_logging": false,
+  "dark_theme": true
+}

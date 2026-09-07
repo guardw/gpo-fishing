@@ -1,0 +1,115 @@
+{
+  "auto_purchase_enabled": true,
+  "auto_purchase_amount": 10,
+  "loops_per_purchase": 10,
+  "point_coords": {
+    "1": [
+      813,
+      933
+    ],
+    "2": [
+      966,
+      939
+    ],
+    "3": [
+      1126,
+      938
+    ]
+  },
+  "fruit_coords": {
+    "fruit_point": [
+      969,
+      829
+    ],
+    "bait_point": [
+      1107,
+      607
+    ],
+    "fruit_point_2": [
+      1035,
+      831
+    ]
+  },
+  "fishing_location": [
+    948,
+    328
+  ],
+  "fruit_storage_enabled": true,
+  "fruit_storage_key": "3",
+  "rod_key": "2",
+  "kp": 0.1,
+  "kd": 0.5,
+  "scan_timeout": 14.0,
+  "wait_after_loss": 1.0,
+  "smart_check_interval": 15.0,
+  "webhook_url": "-",
+  "webhook_enabled": false,
+  "webhook_interval": 10,
+  "fish_progress_webhook_enabled": false,
+  "devil_fruit_webhook_enabled": true,
+  "fruit_spawn_webhook_enabled": true,
+  "purchase_webhook_enabled": true,
+  "recovery_webhook_enabled": true,
+  "bait_webhook_enabled": true,
+  "ocr_performance_mode": "fast",
+  "auto_bait_enabled": true,
+  "top_bait_coords": [
+    975,
+    767
+  ],
+  "window_width": 400,
+  "window_height": 723,
+  "dark_theme": true,
+  "current_theme": "dark",
+  "layout_settings": {
+    "bar": {
+      "name": "BAR LAYOUT",
+      "color": [
+        85,
+        170,
+        255
+      ],
+      "border_color": [
+        0,
+        100,
+        200
+      ],
+      "area": {
+        "x": 1000,
+        "y": 371,
+        "width": 263,
+        "height": 472
+      },
+      "description": "Fishing Bar Detection"
+    },
+    "drop": {
+      "name": "DROP LAYOUT",
+      "color": [
+        85,
+        255,
+        85
+      ],
+      "border_color": [
+        0,
+        200,
+        0
+      ],
+      "area": {
+        "x": 705,
+        "y": 76,
+        "width": 497,
+        "height": 122
+      },
+      "description": "Loot Drop Recognition"
+    }
+  },
+  "zoom_settings": {
+    "auto_zoom_enabled": false,
+    "zoom_out_steps": 5,
+    "zoom_in_steps": 8,
+    "step_delay": 0.1,
+    "sequence_delay": 0.5,
+    "zoom_cooldown": 2.0
+  },
+  "last_saved": "2026-09-07T17:21:05.710623"
+}
